@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#Help and errors
+if test $# -eq 0 || test "$1" == "-h" || test $# -eq 1
+then
+    echo "Help:"
+    echo "    Usage: $0 <src dir> <dest dir>"
+    exit 1
+fi
+
+for file in $(find $1 -name "*.txt" -type f); do cp $file $2`echo $file | tr / +`;
+if test "$3" == "-v"
+then
+    echo "Moving $file from $1 to $2"
+fi
+done
+if test "$3" == "-v"
+then
+    echo "Operation successfully completed!"
+fi
+
+
+
+
+
+
+
+
