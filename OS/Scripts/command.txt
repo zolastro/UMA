@@ -1,12 +1,30 @@
 #!/bin/bash
 
 #Help and errors
-if test $# -eq 0 || test "$1" == "-h" || test $# -eq 1
+
+if test "$1" == "-h"
 then
-    echo "Help:"
-    echo "    Usage: $0 <src dir> <dest dir>"
+echo "$0(1)                          Assignment on Bourne Shell data processing $
+NAME
+       $0 - copy all the txt files to the destination directory, renaming all the files for it abso$
+SYNOPSIS
+       $0 [OPTION]...SOURCE DEST [EXTENSION]
+DESCRIPTION
+        copy all the txt files  from the source directory to the destin$
+
+        -h
+                displays this help window
+        -v
+                verbose mode.
+
+" | less;
+fi
+if test $# -eq 0 || test $# -eq 1
+then
+    echo "Syntax error. Use -h for help"
     exit 1
 fi
+
 
 for file in $(find $1 -name "*.txt" -type f); do cp $file $2`echo $file | tr / +`;
 if test "$3" == "-v"
@@ -18,11 +36,6 @@ if test "$3" == "-v"
 then
     echo "Operation successfully completed!"
 fi
-
-
-
-
-
 
 
 
