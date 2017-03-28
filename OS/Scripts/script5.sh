@@ -8,10 +8,10 @@ NAME
        script5 - adds the number of lines of code in each file of a given directory
 
 SYNOPSIS
-       ls [OPTION]... [FILE]...
+       script5 [OPTION]... [DIRECTORY]...
 
 DESCRIPTION
-       Echoes the number of lines of code in each file from a given directory (the current directory by default).
+       Echoes the number of lines of code in each file from a given directory.
        -e EXTENSION
 		changes the extension searched
        -h
