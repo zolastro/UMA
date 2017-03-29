@@ -4,26 +4,24 @@
 #include "Scheduler.h"
 
 void Create(Scheduler *plf){
+  // Protip: We are using real TList instead of pointers to TList, so we use name.property to access a property
   (*plf).high = NULL;
   (*plf).low = NULL;
 }
+
 void Show(Scheduler plf){
+  //The high priority list is always connected to the low priority list
   TList listH = plf.high;
-  TList listL = plf.low;
   int i = 0;
   printf("- SCHEDULER CONTENTS ------\n");
-  while (listH != NULL && listH != listL) {
+  while (listH != NULL) {
     printf("%d. Process: '%s' Priority: %c\n", i, listH->name, listH->type);
     listH = listH->next;
     i++;
   }
-  while (listL != NULL) {
-    printf("%d. Process: '%s' Priority: %c\n", i, listL->name, listL->type);
-    listL = listL->next;
-    i++;
-  }
   printf("---------------------------\n");
 }
+
 
 void InsertFirst(TList* plist, char* name, char type){
   TList aux = (TList)malloc(sizeof(TProc));
