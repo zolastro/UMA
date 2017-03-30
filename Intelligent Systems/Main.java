@@ -13,7 +13,7 @@ public class Main {
 	{
 		/*** VARIABLES ***/
 		// Field parameters
-		boolean[][] positions = new boolean[NumColRows-1][NumColRows-1];
+		boolean[][] positions = new boolean[NumColRows][NumColRows];
 		int NumPixelRows=NumColRows*TileSize;
 		int NumPixelCols=NumColRows*TileSize;
 		int NdxObstacle = 0;
@@ -52,8 +52,8 @@ public class Main {
 		 */
 		int i, j;
 		while (NdxObstacle<NumObstacles) {
-			i = rand.nextInt(NumColRows-1);
-			j = rand.nextInt(NumColRows-1);
+			i = rand.nextInt(NumColRows);
+			j = rand.nextInt(NumColRows);
 			System.out.println(i + " " + j);
 			if (!positions[i][j]) {
 				positions[i][j] = true;
