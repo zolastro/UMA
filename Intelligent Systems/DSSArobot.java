@@ -42,7 +42,7 @@ public class DSSArobot extends Robot {
 		if(c == 'N'){
 			if(d > 180){
 				turnRight(360-d);
-			}else if (d<180) {
+			}else {
 				turnLeft(d);
 			}
 			ahead(64);
