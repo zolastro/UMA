@@ -22,7 +22,48 @@ public class DSSArobot extends Robot {
 		getMatrix(); 
 		List<Spot> path = AStarPathFinding();
 		System.out.println(path);
-		//TODO follow path
+		int i = 1;
+		while(i<path.size()){
+			if(path.get(i).y>path.get(i-1).y){
+				move('N');
+			}else if(path.get(i).y<path.get(i-1).y){
+				move('S');
+			}else if(path.get(i).x>path.get(i-1).x){
+				move('E');
+			}else if(path.get(i).x<path.get(i-1).x){
+				move('W');
+			}
+			i++;
+		}
+	}
+	
+	private void move(char c){
+		double d = getHeading();
+		if(c == 'N'){
+			if(d > 180){
+				turnRight(360-d);
+			}else{
+				turnLeft(d);
+			}
+			ahead(64);
+		}else if(c == 'S'){
+			turnRight(180-d);
+			ahead(64);
+		}else if(c == 'E'){
+			if(d >= 90){
+				turnLeft(d-90);
+			}else{
+				turnLeft(90-d);
+			}
+			ahead(64);
+		}else{
+			if(d>=90){
+				turnRight(270-d);	
+			}else if(d==0){
+				turnLeft(90);
+			}
+			ahead(64);
+		}
 	}
 	
 	private List<Spot> AStarPathFinding(){
