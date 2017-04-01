@@ -1,13 +1,13 @@
 import java.util.Random;
 
 import robocode.control.*;
-import java.util.Arrays;
-import robocode.control.events.*; 
 
 public class Main {
 	private static final int NumColRows = 15;
 	private static final int TileSize = 64;
-	private static final int NumObstacles = 20;
+	private static final int SEED = 53;
+	private static final int NumObstacles = 60;
+	private static final String RobocodePath = "E:/Programas/robocode";
 	
 	public static void main(String[] args)
 	{
@@ -27,7 +27,7 @@ public class Main {
 		
 		//Create the RobocodeEngine
 		RobocodeEngine engine =
-				new RobocodeEngine(new java.io.File("C:/Robocode"));
+				new RobocodeEngine(new java.io.File(RobocodePath));
 		// Run from C:/Robocode
 		// Show the Robocode battle view
 		engine.setVisible(true);
@@ -41,11 +41,11 @@ public class Main {
 		 */
 		RobotSpecification[] modelRobots =
 				engine.getLocalRepository
-				("sample.SittingDuck,searchpractice.RouteBot*");
+				("sample.SittingDuck,prRobots.DSSArobot*");
 		RobotSpecification[] existingRobots =
 				new RobotSpecification[NumObstacles+1];
 		RobotSetup[] robotSetups = new RobotSetup[NumObstacles+1];
-		Random rand = new Random(5);
+		Random rand = new Random(SEED);
 		
 		/* 
 		 * Generate the positions for the robots 
@@ -54,22 +54,22 @@ public class Main {
 		while (NdxObstacle<NumObstacles) {
 			i = rand.nextInt(NumColRows);
 			j = rand.nextInt(NumColRows);
-			System.out.println(i + " " + j);
-			if (!positions[i][j]) {
+			//System.out.println(i + " " + j);
+			if (!positions[i][j] && !(i==0 && j==0)) {
 				positions[i][j] = true;
 				existingRobots[NdxObstacle]=modelRobots[0];
 				robotSetups[NdxObstacle]=new RobotSetup((double)i*TileSize+TileSize/2,(double)j*TileSize+TileSize/2,0.0);
 				NdxObstacle++;
 			}			
 		}
-		System.out.println(Arrays.deepToString(positions));
+		//System.out.println(Arrays.deepToString(positions));
 		
 		/*
 		 * Create the agent and place it in a random position without obstacle
 		 */
-		existingRobots[NumObstacles]=modelRobots[0]; 
-		double InitialAgentRow= 0;
-		double InitialAgentCol= 0;
+		existingRobots[NumObstacles]=modelRobots[1]; 
+		double InitialAgentRow= 32;
+		double InitialAgentCol= 32;
 		robotSetups[NumObstacles]=new RobotSetup(InitialAgentRow,
 				InitialAgentCol,0.0);
 		/* Create and run the battle */
@@ -82,6 +82,14 @@ public class Main {
 						hideEnemyNames,
 						existingRobots,
 						robotSetups);
+		
+		// Wait 3000 miliseconds for the user to position the window
+		try {
+		    Thread.sleep(3000);
+		} catch(InterruptedException ex) {
+		    Thread.currentThread().interrupt();
+		}
+		
 		// Run our specified battle and let it run till it is over
 		engine.runBattle(battleSpec, true); // waits till the battle finishes
 		// Cleanup our RobocodeEngine

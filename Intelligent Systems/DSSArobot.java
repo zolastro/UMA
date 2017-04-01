@@ -2,47 +2,47 @@ package prRobots;
 
 import java.util.*;
 import robocode.Robot;
+import robocode.StatusEvent;
 
 public class DSSArobot extends Robot {
 
 	private static final int NumColsRows = 15;
-	private static final int SEED = 27;
-	private static final int NumObstacles = 50;
+	private static final int SEED = 53;
+	private static final int NumObstacles = 60;
 	private Spot positions[][] = new Spot[NumColsRows][NumColsRows];
-	
-	public static void main(String[] args) {
-		DSSArobot r = new DSSArobot();
-	}
+	private int turn;
+	private List<Spot> path;
 	
 	public DSSArobot(){
+		getMatrix();
+		this.turn = 1;
+		this.path = AStarPathFinding();		
 		run();
 	}
 	
 	public void run(){
-		getMatrix(); 
-		List<Spot> path = AStarPathFinding();
 		System.out.println(path);
-		int i = 1;
-		while(i<path.size()){
-			if(path.get(i).y>path.get(i-1).y){
-				move('N');
-			}else if(path.get(i).y<path.get(i-1).y){
-				move('S');
-			}else if(path.get(i).x>path.get(i-1).x){
-				move('E');
-			}else if(path.get(i).x<path.get(i-1).x){
-				move('W');
-			}
-			i++;
+	}
+	
+	public void onStatus(StatusEvent e) {
+		if(path.get(turn).y>path.get(turn-1).y){
+			move('N');
+		}else if(path.get(turn).y<path.get(turn-1).y){
+			move('S');
+		}else if(path.get(turn).x>path.get(turn-1).x){
+			move('E');
+		}else if(path.get(turn).x<path.get(turn-1).x){
+			move('W');
 		}
+		turn++;
 	}
 	
 	private void move(char c){
-		double d = getHeading();
+		double d = this.getHeading();
 		if(c == 'N'){
 			if(d > 180){
 				turnRight(360-d);
-			}else{
+			}else if (d<180) {
 				turnLeft(d);
 			}
 			ahead(64);
@@ -50,17 +50,17 @@ public class DSSArobot extends Robot {
 			turnRight(180-d);
 			ahead(64);
 		}else if(c == 'E'){
-			if(d >= 90){
+			if(d > 90){
 				turnLeft(d-90);
-			}else{
-				turnLeft(90-d);
+			}else if (d < 90) {
+				turnRight(90-d);
 			}
 			ahead(64);
 		}else{
-			if(d>=90){
-				turnRight(270-d);	
-			}else if(d==0){
-				turnLeft(90);
+			if(d>270){
+				turnLeft(d-270);	
+			}else if(d<270){
+				turnRight(270-d);
 			}
 			ahead(64);
 		}
@@ -151,9 +151,10 @@ public class DSSArobot extends Robot {
 		
 		int i, j;
 		while (NdxObstacle<NumObstacles) {
-			i = rand.nextInt(NumColsRows-1);
-			j = rand.nextInt(NumColsRows-1);
-			if (!positions[i][j].isWall) {
+			i = rand.nextInt(NumColsRows);
+			j = rand.nextInt(NumColsRows);
+			if (!positions[i][j].isWall && !(i==0 && j==0)) {
+				System.out.println(i + " " + j);
 				positions[i][j].isWall = true;
 				NdxObstacle++;
 			}			
