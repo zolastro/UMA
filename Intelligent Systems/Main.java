@@ -1,3 +1,5 @@
+package prRobotsMain;
+
 import java.util.Random;
 
 import robocode.control.*;
@@ -7,7 +9,7 @@ public class Main {
 	private static final int TileSize = 64;
 	private static final int SEED = 53;
 	private static final int NumObstacles = 60;
-	private static final String RobocodePath = "E:/Programas/robocode";
+	private static final String RobocodePath = "C:/robocode";
 	
 	public static void main(String[] args)
 	{
@@ -68,8 +70,10 @@ public class Main {
 		 * Create the agent and place it in a random position without obstacle
 		 */
 		existingRobots[NumObstacles]=modelRobots[1]; 
-		double InitialAgentRow= 32;
-		double InitialAgentCol= 32;
+		double InitialAgentRow= rand.nextInt(NumColRows)*64 + 32;
+		double InitialAgentCol= rand.nextInt(NumColRows)*64 +32;
+		System.out.println("("+((InitialAgentRow/64)-32) + ", " + ((InitialAgentCol/64)-32) + ")");
+		System.out.println("("+rand.nextInt(NumColRows) + ", " + rand.nextInt(NumColRows) +")");
 		robotSetups[NumObstacles]=new RobotSetup(InitialAgentRow,
 				InitialAgentCol,0.0);
 		/* Create and run the battle */
