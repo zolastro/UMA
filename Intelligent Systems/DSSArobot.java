@@ -11,12 +11,15 @@ public class DSSArobot extends Robot {
 	private static final int NumObstacles = 60;
 	private Spot positions[][] = new Spot[NumColsRows][NumColsRows];
 	private int turn;
+	private Spot start;
+	private Spot end;
 	private List<Spot> path;
 	
 	public DSSArobot(){
 		getMatrix();
 		this.turn = 1;
-		this.path = AStarPathFinding();		
+		this.path = null;
+		this.path = AStarPathFinding();			
 		run();
 	}
 	
@@ -68,9 +71,7 @@ public class DSSArobot extends Robot {
 	
 	private List<Spot> AStarPathFinding(){
 		List<Spot> path = new ArrayList<>();
-		Spot start = positions[0][0];
 		start.isWall = false;
-		Spot end = positions[NumColsRows-1][NumColsRows-1];
 		end.isWall = false;
 		
 		List<Spot> openList = new ArrayList<>();
@@ -165,6 +166,10 @@ public class DSSArobot extends Robot {
 				positions[m][n].addNeighbors(positions, NumColsRows-1, NumColsRows-1);
 			}
 		}
+		
+		start = positions[rand.nextInt(NumColsRows)][rand.nextInt(NumColsRows)];
+		end = positions[rand.nextInt(NumColsRows)][rand.nextInt(NumColsRows)];
+		
 		showMap();
 	}
 	
