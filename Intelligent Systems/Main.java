@@ -7,7 +7,7 @@ import robocode.control.*;
 public class Main {
 	private static final int NumColRows = 15;
 	private static final int TileSize = 64;
-	private static final int SEED = 53;
+	private static final int SEED = 2;
 	private static final int NumObstacles = 60;
 	private static final String RobocodePath = "C:/robocode";
 	
@@ -57,7 +57,7 @@ public class Main {
 			i = rand.nextInt(NumColRows);
 			j = rand.nextInt(NumColRows);
 			//System.out.println(i + " " + j);
-			if (!positions[i][j] && !(i==0 && j==0)) {
+			if (!positions[i][j]) {
 				positions[i][j] = true;
 				existingRobots[NdxObstacle]=modelRobots[0];
 				robotSetups[NdxObstacle]=new RobotSetup((double)i*TileSize+TileSize/2,(double)j*TileSize+TileSize/2,0.0);
@@ -70,10 +70,16 @@ public class Main {
 		 * Create the agent and place it in a random position without obstacle
 		 */
 		existingRobots[NumObstacles]=modelRobots[1]; 
-		double InitialAgentRow= rand.nextInt(NumColRows)*64 + 32;
-		double InitialAgentCol= rand.nextInt(NumColRows)*64 +32;
-		System.out.println("("+((InitialAgentRow/64)-32) + ", " + ((InitialAgentCol/64)-32) + ")");
-		System.out.println("("+rand.nextInt(NumColRows) + ", " + rand.nextInt(NumColRows) +")");
+		int k, l;
+		do{
+			k = rand.nextInt(NumColRows);
+			l = rand.nextInt(NumColRows);	
+		}while(positions[k][l]);
+		
+		
+		double InitialAgentRow= k*64 + 32;
+		double InitialAgentCol= l*64 +32;
+		
 		robotSetups[NumObstacles]=new RobotSetup(InitialAgentRow,
 				InitialAgentCol,0.0);
 		/* Create and run the battle */
