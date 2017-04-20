@@ -35,10 +35,14 @@ public class GeneticAlgorithm {
 		  // --------------------------------------------------------------
 		  Gene[] sampleGenes = new Gene[ 4 ];
 
-		  sampleGenes[0] = new IntegerGene(conf, 0, 3 );  // Quarters
-		  sampleGenes[1] = new IntegerGene(conf, 0, 2 );  // Dimes
-		  sampleGenes[2] = new IntegerGene(conf, 0, 1 );  // Nickels
-		  sampleGenes[3] = new IntegerGene(conf, 0, 4 );  // Pennies
+		  // Distance limit to consider that the enemy is close
+		  sampleGenes[0] = new DoubleGene(conf, 0, 300 );  
+		  // Probability to change the speed
+		  sampleGenes[1] = new DoubleGene(conf, 0, 1 );  
+		  // Range of possible robot speeds
+		  sampleGenes[2] = new DoubleGene(conf, 0, 24 );  
+		  // Minimum robot speed
+		  sampleGenes[3] = new DoubleGene(conf, 0, 24 );  
 
 		  Chromosome sampleChromosome = new Chromosome(conf, sampleGenes );
 
