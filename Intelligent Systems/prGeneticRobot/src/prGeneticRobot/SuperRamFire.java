@@ -2,7 +2,8 @@ package prGeneticRobot;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
- 
+import java.util.Random;
+
 import robocode.*;
 import robocode.util.Utils;
 /**
@@ -15,7 +16,7 @@ public class SuperRamFire extends AdvancedRobot {
  
 	//These are constants. One advantage of these is that the logic in them (such as 20-3*BULLET_POWER)
 	//does not use codespace, making them cheaper than putting the logic in the actual code.
- 
+	final static int SEED = 0;
 	final static double BULLET_POWER=3;//Our bulletpower.
 	final static double BULLET_DAMAGE=BULLET_POWER*4;//Formula for bullet damage.
 	final static double BULLET_SPEED=20-3*BULLET_POWER;//Formula for bullet speed.
@@ -24,10 +25,12 @@ public class SuperRamFire extends AdvancedRobot {
 	static double dir=1;
 	static double oldEnemyHeading;
 	static double enemyEnergy;
- 
+	
+	Random randomGenerator;
  
 	public void run(){
- 
+		randomGenerator = new Random(SEED);
+		
 		//RamFire Colors
 		setBodyColor(Color.lightGray);
 		setGunColor(Color.gray);
@@ -54,7 +57,7 @@ public class SuperRamFire extends AdvancedRobot {
  
 			//We use 300/e.getDistance() to decide if we want to change directions.
 			//This means that we will be less likely to reverse right as we are about to ram the enemy robot.
-			if(Math.random()>200/e.getDistance()){
+			if(randomGenerator.nextDouble()>200/e.getDistance()){
 				dir=-dir;
 			}
 		}
