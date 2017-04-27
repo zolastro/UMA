@@ -1,4 +1,4 @@
-package prGeneticRobot;
+package prGeneticAlgorithm;
 
 import org.jgap.*;
 /**
