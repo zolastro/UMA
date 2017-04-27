@@ -1,5 +1,7 @@
 package prGeneticAlgorithm;
 
+import java.io.PrintWriter;
+
 import org.jgap.*;
 import org.jgap.impl.*;
 
@@ -8,7 +10,7 @@ import net.sf.robocode.battle.IBattleManagerBase;
 public class GeneticAlgorithm {
 
 	public static void main(String[] args) throws Exception {
-		final int MAX_ALLOWED_EVOLUTIONS = 200;
+		final int MAX_ALLOWED_EVOLUTIONS = 1000;
 
 		// Start with a DefaultConfiguration, which comes setup with the
 		// most common settings.
@@ -20,8 +22,8 @@ public class GeneticAlgorithm {
 		// We construct it with the target amount of change provided
 		// by the user.
 		// ------------------------------------------------------------
-		int targetAmount = Integer.parseInt(args[0]);
-		FitnessFunction myFunc = new MinimizingMakeChangeFitnessFunction(targetAmount);
+		
+		FitnessFunction myFunc = new RobocodeFitnessFunction("prGeneticRobot.SuperTracker*", "prGeneticRobot.SuperRamFire*");
 
 		conf.setFitnessFunction(myFunc);
 
@@ -58,32 +60,26 @@ public class GeneticAlgorithm {
 		// the population each round. We'll set the population size to
 		// 500 here.
 		// --------------------------------------------------------------
-		conf.setPopulationSize(500);
-		IChromosome bestSolutionSoFar;
+		conf.setPopulationSize(10);
 		Genotype population = Genotype.randomInitialGenotype( conf );
+
+		PrintWriter pw = new PrintWriter("bestConf.txt");
+		
+		
+		for (int i = 0; i < MAX_ALLOWED_EVOLUTIONS; i++) {
+			System.out.println("Generation: " + i);
+
+			pw.append("Generation: " + i + '\n');
+			population.evolve();
+			for(Gene g:population.getFittestChromosome().getGenes()){
+				pw.append(g.getAllele().toString() + ", ");
+			}
+		}
+		
+		pw.close();
+		IChromosome bestSolutionSoFar;
 		bestSolutionSoFar = population.getFittestChromosome();
 
-		for (int i = 0; i < MAX_ALLOWED_EVOLUTIONS; i++) {
-			population.evolve();
-		}
-
-		System.out.println("The best solution contained the following: ");
-
-		System.out.println(
-				MinimizingMakeChangeFitnessFunction.getNumberOfCoinsAtGene(bestSolutionSoFar, 0) + " quarters.");
-
-		System.out
-				.println(MinimizingMakeChangeFitnessFunction.getNumberOfCoinsAtGene(bestSolutionSoFar, 1) + " dimes.");
-
-		System.out.println(
-				MinimizingMakeChangeFitnessFunction.getNumberOfCoinsAtGene(bestSolutionSoFar, 2) + " nickels.");
-
-		System.out.println(
-				MinimizingMakeChangeFitnessFunction.getNumberOfCoinsAtGene(bestSolutionSoFar, 3) + " pennies.");
-
-		System.out.println(
-				"For a total of " + MinimizingMakeChangeFitnessFunction.amountOfChange(bestSolutionSoFar) + " cents in "
-						+ MinimizingMakeChangeFitnessFunction.getTotalNumberOfCoins(bestSolutionSoFar) + " coins.");
 	}
 
 }
