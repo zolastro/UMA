@@ -25,10 +25,15 @@ public class RobocodeFitnessFunction extends FitnessFunction {
 	}
 
 	public double evaluate(IChromosome chromosomes) {
-		return startBattle(chromosomes);
+		try {
+			return startBattle(chromosomes);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return -1;
+		}
 	}
 
-	private double startBattle(IChromosome chromosomes) {
+	private double startBattle(IChromosome chromosomes) throws FileNotFoundException {
 
 		int NumColRows = 15;
 		int TileSize = 64;
@@ -36,11 +41,11 @@ public class RobocodeFitnessFunction extends FitnessFunction {
 
 		int NumPixelRows = NumColRows * TileSize;
 		int NumPixelCols = NumColRows * TileSize;
-		int SEED = 5;
+		int SEED = 10;
 
 		// Battle parameters
-		int numberOfRounds = 5;
-		long inactivityTime = 10000000;
+		int numberOfRounds = 15;
+		long inactivityTime = 5000;
 		double gunCoolingRate = 1.0;
 		int sentryBorderSize = 50;
 		boolean hideEnemyNames = false;
@@ -57,9 +62,9 @@ public class RobocodeFitnessFunction extends FitnessFunction {
 		 * Create obstacles and place them at random so that no pair of
 		 * obstacles are at the same position
 		 */
-		RobotSpecification[] modelRobots = engine.getLocalRepository(allyRobot + ", " + enemyRobot);
-		RobotSpecification[] existingRobots = new RobotSpecification[2];
-		RobotSetup[] robotSetups = new RobotSetup[2];
+		RobotSpecification[] modelRobots = engine.getLocalRepository(allyRobot + ", " + enemyRobot + ", sample.SittingDuck");
+		RobotSpecification[] existingRobots = new RobotSpecification[3];
+		RobotSetup[] robotSetups = new RobotSetup[3];
 
 		/*
 		 * Generate the positions for the robots
@@ -117,9 +122,9 @@ public class RobocodeFitnessFunction extends FitnessFunction {
 		int result = BattleObserver.finalScore;
 		System.out.println(result);
 		System.out.println("Robot ended");
+		
+		GeneticAlgorithm.printText(result + " ");
 		return result;
-		
-		
 	}
 }
 

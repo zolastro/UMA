@@ -8,10 +8,10 @@ import org.jgap.impl.*;
 import net.sf.robocode.battle.IBattleManagerBase;
 
 public class GeneticAlgorithm {
-
+	static PrintWriter PW;
 	public static void main(String[] args) throws Exception {
-		final int MAX_ALLOWED_EVOLUTIONS = 1000;
-
+		final int MAX_ALLOWED_EVOLUTIONS = 100;
+		PW = new PrintWriter("allScores.txt");
 		// Start with a DefaultConfiguration, which comes setup with the
 		// most common settings.
 		// -------------------------------------------------------------
@@ -52,7 +52,6 @@ public class GeneticAlgorithm {
 		Chromosome sampleChromosome = new Chromosome(conf, sampleGenes);
 
 		conf.setSampleChromosome(sampleChromosome);
-
 		// Finally, we need to tell the Configuration object how many
 		// Chromosomes we want in our population. The more Chromosomes,
 		// the larger the number of potential solutions (which is good
@@ -63,23 +62,32 @@ public class GeneticAlgorithm {
 		conf.setPopulationSize(10);
 		Genotype population = Genotype.randomInitialGenotype( conf );
 
-		PrintWriter pw = new PrintWriter("bestConf.txt");
-		
-		
+		PrintWriter pwConf = new PrintWriter("bestConf.txt");
+		PrintWriter pwScor = new PrintWriter("bestScores.txt");
+		System.out.println("Number of evolutions: " + MAX_ALLOWED_EVOLUTIONS);
 		for (int i = 0; i < MAX_ALLOWED_EVOLUTIONS; i++) {
 			System.out.println("Generation: " + i);
 
-			pw.append("Generation: " + i + '\n');
+			pwConf.append("Generation " + i + " \n:");
 			population.evolve();
-			for(Gene g:population.getFittestChromosome().getGenes()){
-				pw.append(g.getAllele().toString() + ", ");
+			IChromosome bestTank = population.getFittestChromosome();
+			
+			Double bestScore = bestTank.getFitnessValue();
+			
+			pwScor.append(bestScore.toString() + " ");
+			for(Gene g:bestTank.getGenes()){
+				pwConf.append(g.getAllele().toString() + ", ");
 			}
+			printText("\n");
 		}
-		
-		pw.close();
-		IChromosome bestSolutionSoFar;
-		bestSolutionSoFar = population.getFittestChromosome();
 
+		pwConf.close();
+		pwScor.close();
+		PW.close();
 	}
 
+	static void printText(String t){
+		PW.append(t);
+	}
+	
 }
