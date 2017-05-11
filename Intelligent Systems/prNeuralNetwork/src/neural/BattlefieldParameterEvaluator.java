@@ -15,6 +15,9 @@ import javax.imageio.ImageIO;
 
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.basic.BasicMLData;
+import org.encog.ml.factory.MLMethodFactory;
+import org.encog.ml.factory.MLTrainFactory;
+import org.encog.ml.train.MLTrain;
 import org.encog.neural.data.basic.BasicNeuralDataSet;
 import org.encog.neural.networks.BasicNetwork;
 
@@ -34,8 +37,9 @@ public class BattlefieldParameterEvaluator {
 	final static double MAXGUNCOOLINGRATE = 10;
 	final static int NUMBATTLEFIELDSIZES = 601;
 	final static int NUMCOOLINGRATES = 501;
-	final static int NUMSAMPLES = 1000;
-	// Number of inputs for the multilayer perceptron (size of the input vectors)
+	final static int NUMSAMPLES = 100;
+	// Number of inputs for the multilayer perceptron (size of the input
+	// vectors)
 	final static int NUM_NN_INPUTS = 2;
 
 	// Number of hidden neurons of the neural network
@@ -145,19 +149,30 @@ public class BattlefieldParameterEvaluator {
 		}
 
 		BasicNeuralDataSet MyDataSet = new BasicNeuralDataSet(RawInputs, RawOutputs);
+		BasicNetwork network = new BasicNetwork();
+		network.addLayer(new BasicLayer(null, true, 2)); // Input
+		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 20)); // Hidden
+		network.addLayer(new BasicLayer(new ActivationSigmoid(), false, 1)); // Output
+		network.getStructure().finalizeStructure();
+		network.reset();
 
+		MLTrainFactory trainFactory = new MLTrainFactory();
 		// Create and train the neural network
 
 		// ... TO DO ...
 
 		System.out.println("Training network...");
-
+		MLTrain train = trainFactory.create(network, MyDataSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
+		do{
+	train.iteration();
+		}while(train.getError() > 100);
+			
 		// ... TO DO ...
 
 		System.out.println("Training completed.");
 
 		System.out.println("Testing network...");
-
+		
 		// Generate test samples to build an output image
 
 		int[] OutputRGBint = new int[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES];
@@ -230,14 +245,14 @@ public class BattlefieldParameterEvaluator {
 			ImageIO.write(img, "png", f);
 		} catch (IOException e) {
 
-			// TODO Auto‐generated catchblock 
+			// TODO Auto‐generated catchblock
 			e.printStackTrace();
 
 		}
 
 		System.out.println("Image generated.");
 
-		// Make sure that the Java VM is shut down properly 
+		// Make sure that the Java VM is shut down properly
 		System.exit(0);
 
 	}
@@ -290,7 +305,8 @@ public class BattlefieldParameterEvaluator {
 
 		}
 
-		// Called when the game sends out an information message during the battle
+		// Called when the game sends out an information message during the
+		// battle
 		public void onBattleMessage(BattleMessageEvent e) {
 			System.out.println("Msg> " + e.getMessage());
 		}
