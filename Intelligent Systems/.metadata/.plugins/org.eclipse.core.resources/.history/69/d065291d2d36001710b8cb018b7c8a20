@@ -35,7 +35,8 @@ public class BattlefieldParameterEvaluator {
 	final static int NUMBATTLEFIELDSIZES = 601;
 	final static int NUMCOOLINGRATES = 501;
 	final static int NUMSAMPLES = 1000;
-	// Number of inputs for the multilayer perceptron (size of the input vectors)
+	// Number of inputs for the multilayer perceptron (size of the input
+	// vectors)
 	final static int NUM_NN_INPUTS = 2;
 
 	// Number of hidden neurons of the neural network
@@ -230,15 +231,13 @@ public class BattlefieldParameterEvaluator {
 			ImageIO.write(img, "png", f);
 		} catch (IOException e) {
 
-			// TODO Auto‐generated catchblock 
-			e.printStackTrace();
+			// TODO Auto‐generated catch block e.printStackTrace();
 
 		}
 
 		System.out.println("Image generated.");
 
-		// Make sure that the Java VM is shut down properly 
-		System.exit(0);
+		// Make sure that the Java VM is shut down properly System.exit(0);
 
 	}
 
@@ -290,7 +289,8 @@ public class BattlefieldParameterEvaluator {
 
 		}
 
-		// Called when the game sends out an information message during the battle
+		// Called when the game sends out an information message during the
+		// battle
 		public void onBattleMessage(BattleMessageEvent e) {
 			System.out.println("Msg> " + e.getMessage());
 		}

@@ -290,7 +290,8 @@ public class BattlefieldParameterEvaluator {
 
 		}
 
-		// Called when the game sends out an information message during the battle
+		// Called when the game sends out an information message during the
+		// battle
 		public void onBattleMessage(BattleMessageEvent e) {
 			System.out.println("Msg> " + e.getMessage());
 		}

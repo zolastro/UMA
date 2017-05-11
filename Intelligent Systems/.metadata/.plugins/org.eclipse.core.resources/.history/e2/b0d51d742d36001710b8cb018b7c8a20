@@ -230,8 +230,7 @@ public class BattlefieldParameterEvaluator {
 			ImageIO.write(img, "png", f);
 		} catch (IOException e) {
 
-			// TODO Auto‐generated catchblock 
-			e.printStackTrace();
+			// TODO Auto‐generated catch block e.printStackTrace();
 
 		}
 
@@ -290,7 +289,8 @@ public class BattlefieldParameterEvaluator {
 
 		}
 
-		// Called when the game sends out an information message during the battle
+		// Called when the game sends out an information message during the
+		// battle
 		public void onBattleMessage(BattleMessageEvent e) {
 			System.out.println("Msg> " + e.getMessage());
 		}
