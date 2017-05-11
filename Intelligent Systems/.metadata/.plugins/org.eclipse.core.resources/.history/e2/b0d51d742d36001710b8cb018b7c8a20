@@ -230,8 +230,7 @@ public class BattlefieldParameterEvaluator {
 			ImageIO.write(img, "png", f);
 		} catch (IOException e) {
 
-			// TODO Auto‐generated catchblock 
-			e.printStackTrace();
+			// TODO Auto‐generated catch block e.printStackTrace();
 
 		}
 
