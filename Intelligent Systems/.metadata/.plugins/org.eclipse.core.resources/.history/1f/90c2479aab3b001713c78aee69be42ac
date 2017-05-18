@@ -166,7 +166,7 @@ public class BattlefieldParameterEvaluator {
 		System.out.println("Training network...");
 		MLTrain train = trainFactory.create(network, MyDataSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
 		do{
-			train.iteration();
+	train.iteration();
 		}while(train.getError() > 100);
 			
 		// ... TO DO ...
@@ -181,7 +181,9 @@ public class BattlefieldParameterEvaluator {
 		Color MyColor;
 
 		double MyValue = 0;
-		double[][] MyTestData = new double[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES][NUM_NN_INPUTS];
+		double[][] MyTestData = new double
+
+		[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES][NUM_NN_INPUTS];
 		for (int NdxBattleSize = 0; NdxBattleSize < NUMBATTLEFIELDSIZES; NdxBattleSize++) {
 			for (int NdxCooling = 0; NdxCooling < NUMCOOLINGRATES; NdxCooling++)
 
@@ -201,11 +203,11 @@ public class BattlefieldParameterEvaluator {
 
 			{
 
-				 double[] MyResult = new double[1]; 
-				 network.compute(MyTestData[NdxCooling + NdxBattleSize * NUMCOOLINGRATES], MyResult);
+				// double MyResult= ...
+				// MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES]
 				//
 				// ...;
-				MyValue=ClipColor(MyResult[0]);
+				// MyValue=ClipColor(MyResult);
 				MyColor = new Color((float) MyValue, (float) MyValue, (float) MyValue);
 
 				OutputRGBint[NdxCooling + NdxBattleSize * NUMCOOLINGRATES] = MyColor.getRGB();

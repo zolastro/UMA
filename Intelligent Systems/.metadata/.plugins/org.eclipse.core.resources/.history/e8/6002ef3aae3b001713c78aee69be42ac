@@ -205,7 +205,7 @@ public class BattlefieldParameterEvaluator {
 				 network.compute(MyTestData[NdxCooling + NdxBattleSize * NUMCOOLINGRATES], MyResult);
 				//
 				// ...;
-				MyValue=ClipColor(MyResult[0]);
+				 MyValue=ClipColor(MyResult[0]);
 				MyColor = new Color((float) MyValue, (float) MyValue, (float) MyValue);
 
 				OutputRGBint[NdxCooling + NdxBattleSize * NUMCOOLINGRATES] = MyColor.getRGB();

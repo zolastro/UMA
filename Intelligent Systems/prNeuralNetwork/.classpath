@@ -3,7 +3,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Sergio/Universidad/Segundo/Segundo cuatrimestre/Intelligent systems/Programs/encog/encog-core-3.3.0/lib/commons-math3-3.0.jar"/>
-	<classpathentry kind="lib" path="C:/Sergio/Universidad/Segundo/Segundo cuatrimestre/Intelligent systems/Programs/encog/encog-core-3.3.0/lib/encog-core-3.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Sergio/Universidad/Segundo/Segundo cuatrimestre/Intelligent systems/Programs/encog/encog-core-3.3.0/lib/encog-core-3.3.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Sergio/Universidad/Segundo/Segundo%20cuatrimestre/Intelligent%20systems/Programs/encog/encog-core-3.3.0/apidocs/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="C:/robocode/libs/robocode.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

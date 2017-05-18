@@ -44,7 +44,7 @@ public class BattlefieldParameterEvaluator {
 
 	// Number of hidden neurons of the neural network
 
-	final static int NUM_NN_HIDDEN_UNITS = 10; 
+	final static int NUM_NN_HIDDEN_UNITS = 50; 
 	
 	// Number of epochs for training
 	final static int NUM_TRAINING_EPOCHS = 100000;
@@ -153,7 +153,7 @@ public class BattlefieldParameterEvaluator {
 		BasicNeuralDataSet MyDataSet = new BasicNeuralDataSet(RawInputs, RawOutputs);
 		BasicNetwork network = new BasicNetwork();
 		network.addLayer(new BasicLayer(null, true, 2)); // Input
-		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, NUM_NN_HIDDEN_UNITS)); // Hidden
+		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 20)); // Hidden
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), false, 1)); // Output
 		network.getStructure().finalizeStructure();
 		network.reset();
@@ -166,7 +166,7 @@ public class BattlefieldParameterEvaluator {
 		System.out.println("Training network...");
 		MLTrain train = trainFactory.create(network, MyDataSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
 		do{
-			train.iteration();
+	train.iteration();
 		}while(train.getError() > 100);
 			
 		// ... TO DO ...
@@ -181,7 +181,9 @@ public class BattlefieldParameterEvaluator {
 		Color MyColor;
 
 		double MyValue = 0;
-		double[][] MyTestData = new double[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES][NUM_NN_INPUTS];
+		double[][] MyTestData = new double
+
+		[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES][NUM_NN_INPUTS];
 		for (int NdxBattleSize = 0; NdxBattleSize < NUMBATTLEFIELDSIZES; NdxBattleSize++) {
 			for (int NdxCooling = 0; NdxCooling < NUMCOOLINGRATES; NdxCooling++)
 
@@ -201,11 +203,11 @@ public class BattlefieldParameterEvaluator {
 
 			{
 
-				 double[] MyResult = new double[1]; 
-				 network.compute(MyTestData[NdxCooling + NdxBattleSize * NUMCOOLINGRATES], MyResult);
+				// double MyResult= ...
+				// MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES]
 				//
 				// ...;
-				MyValue=ClipColor(MyResult[0]);
+				// MyValue=ClipColor(MyResult);
 				MyColor = new Color((float) MyValue, (float) MyValue, (float) MyValue);
 
 				OutputRGBint[NdxCooling + NdxBattleSize * NUMCOOLINGRATES] = MyColor.getRGB();
