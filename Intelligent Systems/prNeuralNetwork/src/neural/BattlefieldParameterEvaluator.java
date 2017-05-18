@@ -147,8 +147,8 @@ public class BattlefieldParameterEvaluator {
 			RawOutputs[NdxSample][0] = FinalScore1[NdxSample] / 250;
 
 		}
-
-		BasicNeuralDataSet MyDataSet = new BasicNeuralDataSet(RawInputs, RawOutputs);
+		// Create and train the neural network
+		MLDataSet trainingSet =	new BasicMLDataSet (RawInputs, RawOutputs) ;
 		BasicNetwork network = new BasicNetwork();
 		network.addLayer(new BasicLayer(null, true, 2)); // Input
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 20)); // Hidden
@@ -156,20 +156,22 @@ public class BattlefieldParameterEvaluator {
 		network.getStructure().finalizeStructure();
 		network.reset();
 
-		MLTrainFactory trainFactory = new MLTrainFactory();
-		// Create and train the neural network
-
-		// ... TO DO ...
+		
+		
 
 		System.out.println("Training network...");
-		MLTrain train = trainFactory.create(network, MyDataSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
+		//MLTrainFactory trainFactory = new MLTrainFactory();
+		//MLTrain train = trainFactory.create(network, trainingSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
+		 MLTrain train = new ResilientPropagation (network , trainingSet) ;	// posible final
 		do{
-	train.iteration();
-		}while(train.getError() > 100);
-			
-		// ... TO DO ...
-
+			train.iteration();
+		}while(train.getError() > 100); // testear
+		
 		System.out.println("Training completed.");
+		double e = network.calculateError( trainingSet);
+		System.out.println("Network trained to error: " +e);
+		System.out.println("Saving network");
+		
 
 		System.out.println("Testing network...");
 		
@@ -179,9 +181,7 @@ public class BattlefieldParameterEvaluator {
 		Color MyColor;
 
 		double MyValue = 0;
-		double[][] MyTestData = new double
-
-		[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES][NUM_NN_INPUTS];
+		double[][] MyTestData = new double[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES][NUM_NN_INPUTS];
 		for (int NdxBattleSize = 0; NdxBattleSize < NUMBATTLEFIELDSIZES; NdxBattleSize++) {
 			for (int NdxCooling = 0; NdxCooling < NUMCOOLINGRATES; NdxCooling++)
 
@@ -201,7 +201,7 @@ public class BattlefieldParameterEvaluator {
 
 			{
 
-				// double MyResult= ...
+				double MyResult= 
 				// MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES]
 				//
 				// ...;
