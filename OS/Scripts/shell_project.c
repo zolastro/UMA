@@ -13,7 +13,7 @@ int main(void){
 	int status;
 	pid_t pid_fork;
 
-	getcwd(previous_directory, MAX_LINE);
+	strcpy(previous_directory, "not initializated");
 
 	while (1) {
 		print_prompt(current_path);
@@ -108,47 +108,84 @@ void if_at_home_change_current_path(char current_path[MAX_LINE]){
 void change_directory(char *args[MAX_LINE/2], char previous_directory[MAX_LINE]){
 	int flag;
 	char new_directory[MAX_LINE/2];
-	char directory_for_single_dot[MAX_LINE/2];
 	char current_directory[MAX_LINE];
+	char first_character;
+	char second_character;
+	char third_character;
+	bool change_directory = TRUE;
 	getcwd(current_directory, MAX_LINE);
-	if (is_empty(args, 1)) {
+	if (is_empty(args, 1))
 		strcpy(new_directory, "/home");
-	} else if (args[1][0] == '-' && (args[1][1] == '-' || args[1][1] == '\0')){
-		strcpy(new_directory, previous_directory);
-	} else if (args[1][0] == '.') {
-		if (args[1][1] != '.') {
-			getcwd(directory_for_single_dot, MAX_LINE/2);
-			strcat(directory_for_single_dot, args[1]+1);
-			strcpy(new_directory, directory_for_single_dot);
-		} else {
-			bool stop_going_backwards = FALSE;
-			do {
-				chdir("..");
-				args[1]+=3;
-				stop_going_backwards = args[1][-1] == '\0' || args[1][0] != '.';
-			} while (!stop_going_backwards);
+	else {
+		first_character = args[1][0];
+		second_character = args[1][1];
+		third_character = args[1][2];
+
+		switch (first_character) {
+			case '-':
+				if (second_character == '\0'){
+					if (!strcmp(previous_directory, "not initializated")) {
+						printf("info: cd: previous_directory not set\n");
+						change_directory = FALSE;
+					} else {
+						strcpy(new_directory, previous_directory);
+						printf("%s\n", new_directory);
+					}
+				} else if (second_character == '-' && third_character == '\0'){
+					strcpy(new_directory, "/home");
+				} else {
+					printf("info: cd: --: invalid option\n");
+					change_directory = FALSE;
+				}
+				break;
+			
+			case '.':
+				if (second_character == '/' || second_character == '\0') {
+					char directory_for_single_dot[MAX_LINE/2];
+					getcwd(directory_for_single_dot, MAX_LINE/2);
+        	                        strcat(directory_for_single_dot, args[1]+1);
+	                                strcpy(new_directory, directory_for_single_dot);
+				} else if (second_character == '.') {
+					bool stop_going_backwards = FALSE;
+					char directory_for_double_dots[MAX_LINE/2];
+					getcwd(previous_directory, MAX_LINE);
+	                                do {
+        	                                chdir("..");
+						getcwd(directory_for_double_dots, MAX_LINE/2);
+                	                        args[1]+=3;
+                        	                stop_going_backwards = args[1][-1] == '\0' || args[1][0] != '.';
+                                	} while (!stop_going_backwards);
+					
+					if (args[1][-1] != '\0') {
+						strcat(directory_for_double_dots, "/");
+						strcat(directory_for_double_dots, args[1]);
+						printf("%s\n", directory_for_double_dots);
+						strcpy(new_directory, directory_for_double_dots);
+						chdir(new_directory);
+					}
+					change_directory = FALSE;
+				}
+				break;
+			case '~':
 				args[1]++;
+        	                strcpy(new_directory, "/home");
+	                        strcat(new_directory, args[1]);
+				break;
+			default:
 				strcpy(new_directory, args[1]);
+				break;	
 		}
-	} else if (args[1][0] == '~') {
-		args[1]++;
-		strcpy(new_directory, "/home");
-		strcat(new_directory, args[1]);
-	} else {
-		strcpy(new_directory, args[1]);
 	}
+	if (change_directory){
 	getcwd(previous_directory, MAX_LINE);
 	flag = chdir(new_directory);
 	if (new_directory[0] == '\0')
 		flag = 0;
 	if (flag) {
-		printf("Info: %sFailed using cd (change directory)", KRED);
+		printf("Info cd: %s: No such file or directory\n", args[1]);
 		chdir(current_directory);
 	} else {
 		printf("Info: %sUsed cd (change directory)\n", KCYN);
 	}
+	}
 }
-//
-// void search_for_single_dots(int single_dots[MAX_LINE/2]){
-//
-// }
