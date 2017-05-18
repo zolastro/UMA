@@ -44,8 +44,8 @@ public class BattlefieldParameterEvaluator {
 
 	// Number of hidden neurons of the neural network
 
-	final static int NUM_NN_HIDDEN_UNITS = 10; 
-	
+	final static int NUM_NN_HIDDEN_UNITS = 10;
+
 	// Number of epochs for training
 	final static int NUM_TRAINING_EPOCHS = 100000;
 	static int NdxBattle;
@@ -123,7 +123,7 @@ public class BattlefieldParameterEvaluator {
 
 		}
 
-		// Cleanup our RobocodeEngine 
+		// Cleanup our RobocodeEngine
 		engine.close();
 
 		System.out.println(Arrays.toString(BattlefieldSize));
@@ -165,16 +165,16 @@ public class BattlefieldParameterEvaluator {
 
 		System.out.println("Training network...");
 		MLTrain train = trainFactory.create(network, MyDataSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
-		do{
+		do {
 			train.iteration();
-		}while(train.getError() > 100);
-			
+		} while (train.getError() > 100);
+
 		// ... TO DO ...
 
 		System.out.println("Training completed.");
 
 		System.out.println("Testing network...");
-		
+
 		// Generate test samples to build an output image
 
 		int[] OutputRGBint = new int[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES];
@@ -201,11 +201,9 @@ public class BattlefieldParameterEvaluator {
 
 			{
 
-				 double[] MyResult = new double[1]; 
-				 network.compute(MyTestData[NdxCooling + NdxBattleSize * NUMCOOLINGRATES], MyResult);
-				//
-				// ...;
-				MyValue=ClipColor(MyResult[0]);
+				double[] MyResult = new double[1];
+				network.compute(MyTestData[NdxCooling + NdxBattleSize * NUMCOOLINGRATES], MyResult);
+				MyValue = ClipColor(MyResult[0]);
 				MyColor = new Color((float) MyValue, (float) MyValue, (float) MyValue);
 
 				OutputRGBint[NdxCooling + NdxBattleSize * NUMCOOLINGRATES] = MyColor.getRGB();
@@ -293,9 +291,7 @@ public class BattlefieldParameterEvaluator {
 			// Print out the indexed results with the robot names
 			System.out.println("Battle results:");
 			for (BattleResults result : results) {
-				System.out.println(" " + result.getTeamLeaderName() +
-
-						": " + result.getScore());
+				System.out.println(" " + result.getTeamLeaderName() + ": " + result.getScore());
 			}
 
 			// Store the scores of the robots
