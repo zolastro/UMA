@@ -168,16 +168,13 @@ public class BattlefieldParameterEvaluator {
 		//MLTrain train = trainFactory.create(network, trainingSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
 		 MLTrain train = new ResilientPropagation (network , trainingSet) ;	// posible final
 		int i = 0;
-		double e;
 		 do{
 			train.iteration();
-			System.out.println("Error: " + train.getError());
-			 e = network.calculateError(trainingSet);
 		i++;
-		 }while(e>train.getError()/*i < NUM_TRAINING_EPOCHS*/); // testear
+		 }while(train.getError()>500/*i < NUM_TRAINING_EPOCHS*/); // testear
 		
 		System.out.println("Training completed.");
-//		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
+		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
 		System.out.println("Network trained to error: " +e);
 		
 

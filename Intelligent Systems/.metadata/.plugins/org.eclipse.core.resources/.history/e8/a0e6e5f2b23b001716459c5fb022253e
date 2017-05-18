@@ -49,7 +49,7 @@ public class BattlefieldParameterEvaluator {
 	final static int NUM_NN_HIDDEN_UNITS = 10; 
 	
 	// Number of epochs for training
-	final static int NUM_TRAINING_EPOCHS = 40000;
+	final static int NUM_TRAINING_EPOCHS = 10000;
 	static int NdxBattle;
 
 	static double[] FinalScore1;
@@ -168,16 +168,13 @@ public class BattlefieldParameterEvaluator {
 		//MLTrain train = trainFactory.create(network, trainingSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
 		 MLTrain train = new ResilientPropagation (network , trainingSet) ;	// posible final
 		int i = 0;
-		double e;
 		 do{
 			train.iteration();
-			System.out.println("Error: " + train.getError());
-			 e = network.calculateError(trainingSet);
 		i++;
-		 }while(e>train.getError()/*i < NUM_TRAINING_EPOCHS*/); // testear
+		 }while(i < NUM_TRAINING_EPOCHS); // testear
 		
 		System.out.println("Training completed.");
-//		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
+		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
 		System.out.println("Network trained to error: " +e);
 		
 

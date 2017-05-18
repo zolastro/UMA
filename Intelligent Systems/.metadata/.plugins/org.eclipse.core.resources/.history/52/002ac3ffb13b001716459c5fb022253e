@@ -14,9 +14,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import org.encog.engine.network.activation.ActivationSigmoid;
-import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLData;
-import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.ml.factory.MLMethodFactory;
 import org.encog.ml.factory.MLTrainFactory;
 import org.encog.ml.train.MLTrain;
@@ -49,7 +47,7 @@ public class BattlefieldParameterEvaluator {
 	final static int NUM_NN_HIDDEN_UNITS = 10; 
 	
 	// Number of epochs for training
-	final static int NUM_TRAINING_EPOCHS = 40000;
+	final static int NUM_TRAINING_EPOCHS = 100000;
 	static int NdxBattle;
 
 	static double[] FinalScore1;
@@ -167,17 +165,12 @@ public class BattlefieldParameterEvaluator {
 		//MLTrainFactory trainFactory = new MLTrainFactory();
 		//MLTrain train = trainFactory.create(network, trainingSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
 		 MLTrain train = new ResilientPropagation (network , trainingSet) ;	// posible final
-		int i = 0;
-		double e;
-		 do{
+		do{
 			train.iteration();
-			System.out.println("Error: " + train.getError());
-			 e = network.calculateError(trainingSet);
-		i++;
-		 }while(e>train.getError()/*i < NUM_TRAINING_EPOCHS*/); // testear
+		}while(train.getError() > 100); // testear
 		
 		System.out.println("Training completed.");
-//		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
+		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
 		System.out.println("Network trained to error: " +e);
 		
 
@@ -208,7 +201,7 @@ public class BattlefieldParameterEvaluator {
 			for (int NdxCooling = 0; NdxCooling < NUMCOOLINGRATES; NdxCooling++)
 
 			{
-				double [] MyResult = new double[1];
+				double [] MyResult new double[1];
 				network.compute(MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES],MyResult);
 				MyValue = ClipColor(MyResult[0]);
 
@@ -248,10 +241,10 @@ public class BattlefieldParameterEvaluator {
 		try {
 
 			ImageIO.write(img, "png", f);
-		} catch (IOException e1) {
+		} catch (IOException e) {
 
 			// TODO Auto‐generated catchblock
-			e1.printStackTrace();
+			e.printStackTrace();
 
 		}
 
