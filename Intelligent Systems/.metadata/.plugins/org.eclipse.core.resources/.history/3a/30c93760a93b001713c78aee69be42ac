@@ -40,9 +40,8 @@ public class BattlefieldParameterEvaluator {
 
 	// Number of hidden neurons of the neural network
 
-	final static int NUM_NN_HIDDEN_UNITS = 50; 
-	
-	// Number of epochs for training
+	final static int NUM_NN_HIDDEN_UNITS = 50; // Number of epochs for training
+
 	final static int NUM_TRAINING_EPOCHS = 100000;
 	static int NdxBattle;
 
