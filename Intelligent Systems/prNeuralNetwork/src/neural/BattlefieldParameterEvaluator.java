@@ -138,6 +138,10 @@ public class BattlefieldParameterEvaluator {
 		// Create the training dataset for the neural network
 		double[][] RawInputs = new double[NUMSAMPLES][NUM_NN_INPUTS];
 		double[][] RawOutputs = new double[NUMSAMPLES][1];
+		double[][] TrainingInputs = new double[NUMSAMPLES/2][NUM_NN_INPUTS];
+		double[][] TrainingOutputs = new double[NUMSAMPLES/2][1];
+		double[][] ValidationInputs = new double[NUMSAMPLES/2][NUM_NN_INPUTS];
+		double[][] ValidationOutputs = new double[NUMSAMPLES/2][1];
 
 		for (int NdxSample = 0; NdxSample < NUMSAMPLES; NdxSample++)
 
@@ -151,6 +155,15 @@ public class BattlefieldParameterEvaluator {
 			RawOutputs[NdxSample][0] = FinalScore1[NdxSample] / 250;
 
 		}
+<<<<<<< HEAD
+=======
+		
+		TrainingInputs = Arrays.copyOfRange(RawInputs, 0, NUMSAMPLES/2);
+		TrainingOutputs = Arrays.copyOfRange(RawOutputs, 0, NUMSAMPLES/2);
+		ValidationInputs = Arrays.copyOfRange(RawInputs, NUMSAMPLES/2, NUMSAMPLES);
+		ValidationOutputs = Arrays.copyOfRange(RawOutputs, NUMSAMPLES/2, NUMSAMPLES);
+		
+>>>>>>> refs/remotes/origin/master
 		// Create and train the neural network
 		MLDataSet trainingSet =	new BasicMLDataSet (RawInputs, RawOutputs) ;
 		BasicNetwork network = new BasicNetwork();
@@ -167,6 +180,7 @@ public class BattlefieldParameterEvaluator {
 		//MLTrainFactory trainFactory = new MLTrainFactory();
 		//MLTrain train = trainFactory.create(network, trainingSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
 		 MLTrain train = new ResilientPropagation (network , trainingSet) ;	// posible final
+<<<<<<< HEAD
 		int i = 0;
 		double e;
 		 do{
@@ -178,6 +192,14 @@ public class BattlefieldParameterEvaluator {
 		
 		System.out.println("Training completed.");
 //		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
+=======
+		do{
+			train.iteration();
+		}while(train.getError() > 100); // testear
+		
+		System.out.println("Training completed.");
+		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
+>>>>>>> refs/remotes/origin/master
 		System.out.println("Network trained to error: " +e);
 		
 
@@ -208,7 +230,11 @@ public class BattlefieldParameterEvaluator {
 			for (int NdxCooling = 0; NdxCooling < NUMCOOLINGRATES; NdxCooling++)
 
 			{
+<<<<<<< HEAD
 				double [] MyResult = new double[1];
+=======
+				double [] MyResult new double[1];
+>>>>>>> refs/remotes/origin/master
 				network.compute(MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES],MyResult);
 				MyValue = ClipColor(MyResult[0]);
 
@@ -221,7 +247,7 @@ public class BattlefieldParameterEvaluator {
 
 		// Plot the training samples
 
-		for (int NdxSample = 0; NdxSample < NUMSAMPLES; NdxSample++) {
+		for (int NdxSample = 0; NdxSample < NUMSAMPLES/2; NdxSample++) {
 
 			MyValue = ClipColor(FinalScore1[NdxSample] / 250);
 			MyColor = new Color((float) MyValue,
