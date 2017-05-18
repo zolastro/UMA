@@ -136,6 +136,10 @@ public class BattlefieldParameterEvaluator {
 		// Create the training dataset for the neural network
 		double[][] RawInputs = new double[NUMSAMPLES][NUM_NN_INPUTS];
 		double[][] RawOutputs = new double[NUMSAMPLES][1];
+		double[][] TrainingInputs = new double[NUMSAMPLES/2][NUM_NN_INPUTS];
+		double[][] TrainingOutputs = new double[NUMSAMPLES/2][1];
+		double[][] ValidationInputs = new double[NUMSAMPLES/2][NUM_NN_INPUTS];
+		double[][] ValidationOutputs = new double[NUMSAMPLES/2][1];
 
 		for (int NdxSample = 0; NdxSample < NUMSAMPLES; NdxSample++)
 
@@ -149,6 +153,12 @@ public class BattlefieldParameterEvaluator {
 			RawOutputs[NdxSample][0] = FinalScore1[NdxSample] / 250;
 
 		}
+		
+		TrainingInputs = Arrays.copyOfRange(RawInputs, 0, NUMSAMPLES/2);
+		TrainingOutputs = Arrays.copyOfRange(RawOutputs, 0, NUMSAMPLES/2);
+		ValidationInputs = Arrays.copyOfRange(RawInputs, NUMSAMPLES/2, NUMSAMPLES);
+		ValidationOutputs = Arrays.copyOfRange(RawOutputs, NUMSAMPLES/2, NUMSAMPLES);
+		
 		// Create and train the neural network
 		MLDataSet trainingSet =	new BasicMLDataSet (RawInputs, RawOutputs) ;
 		BasicNetwork network = new BasicNetwork();
@@ -214,7 +224,7 @@ public class BattlefieldParameterEvaluator {
 
 		// Plot the training samples
 
-		for (int NdxSample = 0; NdxSample < NUMSAMPLES; NdxSample++) {
+		for (int NdxSample = 0; NdxSample < NUMSAMPLES/2; NdxSample++) {
 
 			MyValue = ClipColor(FinalScore1[NdxSample] / 250);
 			MyColor = new Color((float) MyValue,
