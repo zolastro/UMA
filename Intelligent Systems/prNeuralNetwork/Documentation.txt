@@ -1,0 +1,2 @@
+//org.encog.neural.networks
+http://heatonresearch-site.s3-website-us-east-1.amazonaws.com/javadoc/encog-3.3/org/encog/neural/networks/BasicNetwork.html
