@@ -149,8 +149,8 @@ public class BattlefieldParameterEvaluator {
 			RawOutputs[NdxSample][0] = FinalScore1[NdxSample] / 250;
 
 		}
-
-		BasicNeuralDataSet MyDataSet = new BasicNeuralDataSet(RawInputs, RawOutputs);
+		// Create and train the neural network
+		MLDataSet trainingSet =	new BasicMLDataSet (RawInputs, RawOutputs) ;
 		BasicNetwork network = new BasicNetwork();
 		network.addLayer(new BasicLayer(null, true, 2)); // Input
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, NUM_NN_HIDDEN_UNITS)); // Hidden
@@ -158,20 +158,21 @@ public class BattlefieldParameterEvaluator {
 		network.getStructure().finalizeStructure();
 		network.reset();
 
-		MLTrainFactory trainFactory = new MLTrainFactory();
-		// Create and train the neural network
-
-		// ... TO DO ...
+		
+		
 
 		System.out.println("Training network...");
-		MLTrain train = trainFactory.create(network, MyDataSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
+		//MLTrainFactory trainFactory = new MLTrainFactory();
+		//MLTrain train = trainFactory.create(network, trainingSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
+		 MLTrain train = new ResilientPropagation (network , trainingSet) ;	// posible final
 		do{
 			train.iteration();
-		}while(train.getError() > 100);
-			
-		// ... TO DO ...
-
+		}while(train.getError() > 100); // testear
+		
 		System.out.println("Training completed.");
+		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
+		System.out.println("Network trained to error: " +e);
+		
 
 		System.out.println("Testing network...");
 		
@@ -200,14 +201,11 @@ public class BattlefieldParameterEvaluator {
 			for (int NdxCooling = 0; NdxCooling < NUMCOOLINGRATES; NdxCooling++)
 
 			{
+				double [] MyResult new double[1];
+				network.compute(MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES],MyResult);
+				MyValue = ClipColor(MyResult[0]);
 
-				 double[] MyResult = new double[1]; 
-				 network.compute(MyTestData[NdxCooling + NdxBattleSize * NUMCOOLINGRATES], MyResult);
-				//
-				// ...;
-				MyValue=ClipColor(MyResult[0]);
 				MyColor = new Color((float) MyValue, (float) MyValue, (float) MyValue);
-
 				OutputRGBint[NdxCooling + NdxBattleSize * NUMCOOLINGRATES] = MyColor.getRGB();
 
 			}
