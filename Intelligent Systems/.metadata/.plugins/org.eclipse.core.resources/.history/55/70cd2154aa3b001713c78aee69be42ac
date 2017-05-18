@@ -123,8 +123,7 @@ public class BattlefieldParameterEvaluator {
 
 		}
 
-		// Cleanup our RobocodeEngine 
-		engine.close();
+		// Cleanup our RobocodeEngine engine.close();
 
 		System.out.println(Arrays.toString(BattlefieldSize));
 
