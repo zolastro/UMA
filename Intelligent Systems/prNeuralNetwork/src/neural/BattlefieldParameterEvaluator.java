@@ -165,12 +165,12 @@ public class BattlefieldParameterEvaluator {
 		 MLTrain train = new ResilientPropagation (network , trainingSet) ;	// posible final
 		do{
 			train.iteration();
+			
 		}while(train.getError() > 100); // testear
 		
 		System.out.println("Training completed.");
-		double e = network.calculateError( trainingSet);
+		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
 		System.out.println("Network trained to error: " +e);
-		System.out.println("Saving network");
 		
 
 		System.out.println("Testing network...");
@@ -201,13 +201,10 @@ public class BattlefieldParameterEvaluator {
 
 			{
 
-				double MyResult= 
-				// MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES]
-				//
-				// ...;
-				// MyValue=ClipColor(MyResult);
+				double [] MyResult new double[1];
+				network.compute(MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES],MyResult);
+				MyValue = ClipColor(MyResult[0]);
 				MyColor = new Color((float) MyValue, (float) MyValue, (float) MyValue);
-
 				OutputRGBint[NdxCooling + NdxBattleSize * NUMCOOLINGRATES] = MyColor.getRGB();
 
 			}
