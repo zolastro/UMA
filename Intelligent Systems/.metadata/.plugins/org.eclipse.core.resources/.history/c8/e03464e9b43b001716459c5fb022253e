@@ -183,7 +183,7 @@ public class BattlefieldParameterEvaluator {
 		do {
 			train.iteration();
 			System.out.println("Error: " + train.getError());
-			e = network.calculateError(validationSet);
+			e = network.calculateError(ValidationInputs);
 			i++;
 		} while ( i < NUM_TRAINING_EPOCHS); // testear
 

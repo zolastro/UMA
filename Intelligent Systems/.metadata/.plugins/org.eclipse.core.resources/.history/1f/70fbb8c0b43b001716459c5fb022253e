@@ -162,8 +162,7 @@ public class BattlefieldParameterEvaluator {
 		ValidationOutputs = Arrays.copyOfRange(RawOutputs, NUMSAMPLES / 2, NUMSAMPLES);
 
 		// Create and train the neural network
-		MLDataSet trainingSet = new BasicMLDataSet(TrainingInputs, TrainingOutputs);
-		MLDataSet validationSet = new BasicMLDataSet(ValidationInputs, ValidationOutputs);
+		MLDataSet trainingSet = new BasicMLDataSet(RawInputs, RawOutputs);
 		BasicNetwork network = new BasicNetwork();
 		network.addLayer(new BasicLayer(null, true, 2)); // Input
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, NUM_NN_HIDDEN_UNITS)); // Hidden
@@ -183,9 +182,9 @@ public class BattlefieldParameterEvaluator {
 		do {
 			train.iteration();
 			System.out.println("Error: " + train.getError());
-			e = network.calculateError(validationSet);
+			e = network.calculateError(ValidationInputs);
 			i++;
-		} while ( i < NUM_TRAINING_EPOCHS); // testear
+		} while (e > train.getError()/* i < NUM_TRAINING_EPOCHS */); // testear
 
 		System.out.println("Training completed.");
 		// double e = network.calculateError(trainingSet); // cambiar de

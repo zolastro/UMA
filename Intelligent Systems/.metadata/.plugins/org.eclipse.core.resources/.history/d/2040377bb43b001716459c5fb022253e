@@ -46,8 +46,8 @@ public class BattlefieldParameterEvaluator {
 
 	// Number of hidden neurons of the neural network
 
-	final static int NUM_NN_HIDDEN_UNITS = 10;
-
+	final static int NUM_NN_HIDDEN_UNITS = 10; 
+	
 	// Number of epochs for training
 	final static int NUM_TRAINING_EPOCHS = 40000;
 	static int NdxBattle;
@@ -125,7 +125,7 @@ public class BattlefieldParameterEvaluator {
 
 		}
 
-		// Cleanup our RobocodeEngine
+		// Cleanup our RobocodeEngine 
 		engine.close();
 
 		System.out.println(Arrays.toString(BattlefieldSize));
@@ -138,10 +138,10 @@ public class BattlefieldParameterEvaluator {
 		// Create the training dataset for the neural network
 		double[][] RawInputs = new double[NUMSAMPLES][NUM_NN_INPUTS];
 		double[][] RawOutputs = new double[NUMSAMPLES][1];
-		double[][] TrainingInputs = new double[NUMSAMPLES / 2][NUM_NN_INPUTS];
-		double[][] TrainingOutputs = new double[NUMSAMPLES / 2][1];
-		double[][] ValidationInputs = new double[NUMSAMPLES / 2][NUM_NN_INPUTS];
-		double[][] ValidationOutputs = new double[NUMSAMPLES / 2][1];
+		double[][] TrainingInputs = new double[NUMSAMPLES/2][NUM_NN_INPUTS];
+		double[][] TrainingOutputs = new double[NUMSAMPLES/2][1];
+		double[][] ValidationInputs = new double[NUMSAMPLES/2][NUM_NN_INPUTS];
+		double[][] ValidationOutputs = new double[NUMSAMPLES/2][1];
 
 		for (int NdxSample = 0; NdxSample < NUMSAMPLES; NdxSample++)
 
@@ -155,15 +155,17 @@ public class BattlefieldParameterEvaluator {
 			RawOutputs[NdxSample][0] = FinalScore1[NdxSample] / 250;
 
 		}
-
-		TrainingInputs = Arrays.copyOfRange(RawInputs, 0, NUMSAMPLES / 2);
-		TrainingOutputs = Arrays.copyOfRange(RawOutputs, 0, NUMSAMPLES / 2);
-		ValidationInputs = Arrays.copyOfRange(RawInputs, NUMSAMPLES / 2, NUMSAMPLES);
-		ValidationOutputs = Arrays.copyOfRange(RawOutputs, NUMSAMPLES / 2, NUMSAMPLES);
-
+<<<<<<< HEAD
+=======
+		
+		TrainingInputs = Arrays.copyOfRange(RawInputs, 0, NUMSAMPLES/2);
+		TrainingOutputs = Arrays.copyOfRange(RawOutputs, 0, NUMSAMPLES/2);
+		ValidationInputs = Arrays.copyOfRange(RawInputs, NUMSAMPLES/2, NUMSAMPLES);
+		ValidationOutputs = Arrays.copyOfRange(RawOutputs, NUMSAMPLES/2, NUMSAMPLES);
+		
+>>>>>>> refs/remotes/origin/master
 		// Create and train the neural network
-		MLDataSet trainingSet = new BasicMLDataSet(TrainingInputs, TrainingOutputs);
-		MLDataSet validationSet = new BasicMLDataSet(ValidationInputs, ValidationOutputs);
+		MLDataSet trainingSet =	new BasicMLDataSet (RawInputs, RawOutputs) ;
 		BasicNetwork network = new BasicNetwork();
 		network.addLayer(new BasicLayer(null, true, 2)); // Input
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, NUM_NN_HIDDEN_UNITS)); // Hidden
@@ -171,29 +173,38 @@ public class BattlefieldParameterEvaluator {
 		network.getStructure().finalizeStructure();
 		network.reset();
 
-		System.out.println("Training network...");
-		// MLTrainFactory trainFactory = new MLTrainFactory();
-		// MLTrain train = trainFactory.create(network, trainingSet,
-		// MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
-		MLTrain train = new ResilientPropagation(network, trainingSet); // posible
-																		// final
+		
+		
 
+		System.out.println("Training network...");
+		//MLTrainFactory trainFactory = new MLTrainFactory();
+		//MLTrain train = trainFactory.create(network, trainingSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
+		 MLTrain train = new ResilientPropagation (network , trainingSet) ;	// posible final
+<<<<<<< HEAD
 		int i = 0;
 		double e;
-		do {
+		 do{
 			train.iteration();
 			System.out.println("Error: " + train.getError());
-			e = network.calculateError(validationSet);
-			i++;
-		} while ( i < NUM_TRAINING_EPOCHS); // testear
-
+			 e = network.calculateError(trainingSet);
+		i++;
+		 }while(e>train.getError()/*i < NUM_TRAINING_EPOCHS*/); // testear
+		
 		System.out.println("Training completed.");
-		// double e = network.calculateError(trainingSet); // cambiar de
-		// trainingSet a validationSet
-		System.out.println("Network trained to error: " + e);
+//		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
+=======
+		do{
+			train.iteration();
+		}while(train.getError() > 100); // testear
+		
+		System.out.println("Training completed.");
+		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
+>>>>>>> refs/remotes/origin/master
+		System.out.println("Network trained to error: " +e);
+		
 
 		System.out.println("Testing network...");
-
+		
 		// Generate test samples to build an output image
 
 		int[] OutputRGBint = new int[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES];
@@ -219,10 +230,12 @@ public class BattlefieldParameterEvaluator {
 			for (int NdxCooling = 0; NdxCooling < NUMCOOLINGRATES; NdxCooling++)
 
 			{
-
-				double[] MyResult = new double[1];
-
-				network.compute(MyTestData[NdxCooling + NdxBattleSize * NUMCOOLINGRATES], MyResult);
+<<<<<<< HEAD
+				double [] MyResult = new double[1];
+=======
+				double [] MyResult new double[1];
+>>>>>>> refs/remotes/origin/master
+				network.compute(MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES],MyResult);
 				MyValue = ClipColor(MyResult[0]);
 
 				MyColor = new Color((float) MyValue, (float) MyValue, (float) MyValue);
@@ -234,7 +247,7 @@ public class BattlefieldParameterEvaluator {
 
 		// Plot the training samples
 
-		for (int NdxSample = 0; NdxSample < NUMSAMPLES / 2; NdxSample++) {
+		for (int NdxSample = 0; NdxSample < NUMSAMPLES/2; NdxSample++) {
 
 			MyValue = ClipColor(FinalScore1[NdxSample] / 250);
 			MyColor = new Color((float) MyValue,

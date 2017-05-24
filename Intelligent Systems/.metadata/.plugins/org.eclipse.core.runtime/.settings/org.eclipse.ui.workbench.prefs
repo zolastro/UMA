@@ -1,3 +1,15 @@
 //org.eclipse.ui.commands/state/org.eclipse.ui.navigator.resources.nested.changeProjectPresentation/org.eclipse.ui.commands.radioState=false
 PLUGINS_NOT_ACTIVATED_ON_STARTUP=org.eclipse.m2e.discovery;
 eclipse.preferences.version=1
+org.eclipse.egit.ui.DiffAddBackgroundColor=221,255,221
+org.eclipse.egit.ui.DiffAddForegroundColor=0,0,0
+org.eclipse.egit.ui.DiffHeadlineBackgroundColor=170,170,170
+org.eclipse.egit.ui.DiffHeadlineForegroundColor=0,0,0
+org.eclipse.egit.ui.DiffHunkBackgroundColor=234,242,245
+org.eclipse.egit.ui.DiffHunkForegroundColor=153,153,153
+org.eclipse.egit.ui.DiffRemoveBackgroundColor=255,221,221
+org.eclipse.egit.ui.DiffRemoveForegroundColor=0,0,0
+org.eclipse.egit.ui.IgnoredResourceBackgroundColor=255,255,255
+org.eclipse.egit.ui.IgnoredResourceForegroundColor=0,0,0
+org.eclipse.egit.ui.UncommittedChangeBackgroundColor=255,255,255
+org.eclipse.egit.ui.UncommittedChangeForegroundColor=0,0,0
