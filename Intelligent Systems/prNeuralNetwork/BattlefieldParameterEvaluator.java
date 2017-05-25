@@ -83,7 +83,7 @@ public class BattlefieldParameterEvaluator {
 
 		// Run from C:/Robocode
 
-		RobocodeEngine engine = new RobocodeEngine(new java.io.File("../robocode"));
+		RobocodeEngine engine = new RobocodeEngine(new java.io.File("C:/robocode"));
 
 		// Add our own battle listener to the RobocodeEngine
 		engine.addBattleListener(new BattleObserver());
@@ -102,7 +102,7 @@ public class BattlefieldParameterEvaluator {
 		boolean hideEnemyNames = false;
 
 		// Get the robots and set up their initial states
-		RobotSpecification[] competingRobots = engine.getLocalRepository("sample.TrackFire, sample.SittingDuck");
+		RobotSpecification[] competingRobots = engine.getLocalRepository("sample.RamFire,sample.TrackFire");
 		RobotSetup[] robotSetups = new RobotSetup[2];
 
 		for (ndxBattle = 0; ndxBattle < NUMSAMPLES; ndxBattle++)
@@ -151,10 +151,10 @@ public class BattlefieldParameterEvaluator {
 		// Create the training dataset for the neural network
 		double[][] RawInputs = new double[NUMSAMPLES][NUM_NN_INPUTS];
 		double[][] RawOutputs = new double[NUMSAMPLES][1];
-		double[][] trainingInputs = new double[NUMSAMPLES / 2][NUM_NN_INPUTS];
-		double[][] trainingOutputs = new double[NUMSAMPLES / 2][1];
-		double[][] validationInputs = new double[NUMSAMPLES / 2][NUM_NN_INPUTS];
-		double[][] validationOutputs = new double[NUMSAMPLES / 2][1];
+		double[][] trainingInputs = new double[NUMSAMPLES*2 / 3][NUM_NN_INPUTS];
+		double[][] trainingOutputs = new double[NUMSAMPLES*2 / 3][1];
+		double[][] validationInputs = new double[NUMSAMPLES / 3][NUM_NN_INPUTS];
+		double[][] validationOutputs = new double[NUMSAMPLES / 3][1];
 
 		for (int NdxSample = 0; NdxSample < NUMSAMPLES; NdxSample++)
 
@@ -172,8 +172,8 @@ public class BattlefieldParameterEvaluator {
 		//66% training, 33% validation
 		trainingInputs = Arrays.copyOfRange(RawInputs, 0, NUMSAMPLES *2/ 3);
 		trainingOutputs = Arrays.copyOfRange(RawOutputs, 0, NUMSAMPLES*2 / 3);
-		validationInputs = Arrays.copyOfRange(RawInputs, NUMSAMPLES / 3, NUMSAMPLES);
-		validationOutputs = Arrays.copyOfRange(RawOutputs, NUMSAMPLES / 3, NUMSAMPLES);
+		validationInputs = Arrays.copyOfRange(RawInputs, NUMSAMPLES*2 / 3, NUMSAMPLES);
+		validationOutputs = Arrays.copyOfRange(RawOutputs, NUMSAMPLES*2 / 3, NUMSAMPLES);
 
 		// Create and train the neural network
 		MLDataSet trainingSet = new BasicMLDataSet(trainingInputs, trainingOutputs);
@@ -276,7 +276,7 @@ public class BattlefieldParameterEvaluator {
 			ImageIO.write(img, "png", f);
 		} catch (IOException ioE) {
 
-			// TODO Auto‐generated catchblock
+			// TODO Autoâ€�generated catchblock
 			ioE.printStackTrace();
 
 		}
@@ -329,7 +329,7 @@ public class BattlefieldParameterEvaluator {
 
 		// Called when the battle is completed successfully with battle results
 		public void onBattleCompleted(BattleCompletedEvent e) {
-			System.out.println("‐‐ Battle has completed ‐‐");
+			System.out.println("â€�â€� Battle has completed â€�â€�");
 
 			// Get the indexed battle results
 			BattleResults[] results = e.getIndexedResults();

@@ -3,18 +3,20 @@ package neural;
 import java.util.Arrays;
 
 import java.awt.Color;
-
+import java.awt.List;
 import java.awt.image.BufferedImage;
 import java.io.File;
-
+import java.io.FileNotFoundException;
 import java.io.IOException;
-
+import java.io.PrintWriter;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
 
 import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLData;
+import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.ml.factory.MLMethodFactory;
 import org.encog.ml.factory.MLTrainFactory;
 import org.encog.ml.train.MLTrain;
@@ -31,7 +33,7 @@ import robocode.control.events.*;
 public class BattlefieldParameterEvaluator {
 
 	// Minimum allowable battlefield size is 400
-	final static int MAXBATTLEFIELDSIZE = 4000;
+	final static int MAXBATTLEFIELDSIZE = 2000;
 
 	// Minimum allowable gun cooling rate is 0.1
 	final static double MAXGUNCOOLINGRATE = 10;
@@ -44,23 +46,33 @@ public class BattlefieldParameterEvaluator {
 
 	// Number of hidden neurons of the neural network
 
-	final static int NUM_NN_HIDDEN_UNITS = 10; 
-	
+	final static int NUM_NN_HIDDEN_UNITS = 20;
+
 	// Number of epochs for training
-	final static int NUM_TRAINING_EPOCHS = 100000;
-	static int NdxBattle;
+	final static int NUM_OF_ROUNDS = 10;
+	static double  maxScore = 0;
+	static int ndxBattle;
 
-	static double[] FinalScore1;
-	static double[] FinalScore2;
+	static double[] finalScore1;
+	static double[] finalScore2;
 
-	public static void main(String[] args) {
+	static PrintWriter pwScore1;
+	static PrintWriter pwScore2;
+	static PrintWriter pwSize;
+	static PrintWriter pwCoolingRate;
+	
+	public static void main(String[] args) throws FileNotFoundException {
+		pwScore1 = new PrintWriter("score1.txt");
+		pwScore2 = new PrintWriter("score2.txt");
+		pwSize = new PrintWriter("size.txt");
+		pwCoolingRate = new PrintWriter("coolingRate.txt");
+		
+		double[] battlefieldSize = new double[NUMSAMPLES];
+		double[] gunCoolingRate = new double[NUMSAMPLES];
 
-		double[] BattlefieldSize = new double[NUMSAMPLES];
-		double[] GunCoolingRate = new double[NUMSAMPLES];
+		finalScore1 = new double[NUMSAMPLES];
 
-		FinalScore1 = new double[NUMSAMPLES];
-
-		FinalScore2 = new double[NUMSAMPLES];
+		finalScore2 = new double[NUMSAMPLES];
 		Random rng = new Random(15L);
 
 		// Disable log messages from Robocode
@@ -70,7 +82,7 @@ public class BattlefieldParameterEvaluator {
 
 		// Run from C:/Robocode
 
-		RobocodeEngine engine = new RobocodeEngine(new java.io.File("C:/Robocode"));
+		RobocodeEngine engine = new RobocodeEngine(new java.io.File("C:/robocode"));
 
 		// Add our own battle listener to the RobocodeEngine
 		engine.addBattleListener(new BattleObserver());
@@ -83,8 +95,7 @@ public class BattlefieldParameterEvaluator {
 
 		// Setup battle parameters
 
-		int numberOfRounds = 1;
-		long inactivityTime = 100;
+		long inactivityTime = 1_000;
 		int sentryBorderSize = 50;
 
 		boolean hideEnemyNames = false;
@@ -93,29 +104,32 @@ public class BattlefieldParameterEvaluator {
 		RobotSpecification[] competingRobots = engine.getLocalRepository("sample.RamFire,sample.TrackFire");
 		RobotSetup[] robotSetups = new RobotSetup[2];
 
-		for (NdxBattle = 0; NdxBattle < NUMSAMPLES; NdxBattle++)
+		for (ndxBattle = 0; ndxBattle < NUMSAMPLES; ndxBattle++)
 
 		{
 
 			// Choose the battlefield size and gun cooling rate
-			BattlefieldSize[NdxBattle] = MAXBATTLEFIELDSIZE * (0.1 + 0.9 * rng.nextDouble());
-			GunCoolingRate[NdxBattle] = MAXGUNCOOLINGRATE * (0.1 + 0.9 * rng.nextDouble());
-
+			battlefieldSize[ndxBattle] = MAXBATTLEFIELDSIZE * (0.1 + 0.9 * rng.nextDouble());
+			gunCoolingRate[ndxBattle] = MAXGUNCOOLINGRATE * (0.1 + 0.9 * rng.nextDouble());
+			pwSize.append(battlefieldSize[ndxBattle]+ " ");
+			pwCoolingRate.append(gunCoolingRate[ndxBattle]+ " ");
+			
 			// Create the battlefield
 
-			BattlefieldSpecification battlefield = new BattlefieldSpecification((int) BattlefieldSize[NdxBattle],
-					(int) BattlefieldSize[NdxBattle]);
+			int size = (int) Math.max(400,  battlefieldSize[ndxBattle]);
+			BattlefieldSpecification battlefield = new BattlefieldSpecification(size,
+					size);
 
 			// Set the robot positions
 
-			robotSetups[0] = new RobotSetup(BattlefieldSize[NdxBattle] / 2.0, BattlefieldSize[NdxBattle] / 3.0, 0.0);
+			robotSetups[0] = new RobotSetup(battlefieldSize[ndxBattle] / 2.0, battlefieldSize[ndxBattle] / 3.0, 0.0);
 
-			robotSetups[1] = new RobotSetup(BattlefieldSize[NdxBattle] / 2.0, 2.0 * BattlefieldSize[NdxBattle] / 3.0,
+			robotSetups[1] = new RobotSetup(battlefieldSize[ndxBattle] / 2.0, 2.0 * battlefieldSize[ndxBattle] / 3.0,
 					0.0);
 
 			// Prepare the battle specification
-			BattleSpecification battleSpec = new BattleSpecification(battlefield, numberOfRounds, inactivityTime,
-					GunCoolingRate[NdxBattle], sentryBorderSize, hideEnemyNames, competingRobots, robotSetups);
+			BattleSpecification battleSpec = new BattleSpecification(battlefield, NUM_OF_ROUNDS, inactivityTime,
+					gunCoolingRate[ndxBattle], sentryBorderSize, hideEnemyNames, competingRobots, robotSetups);
 
 			// Run our specified battle and let it run till it is over
 			engine.runBattle(battleSpec, true); // waits till the battle
@@ -123,23 +137,23 @@ public class BattlefieldParameterEvaluator {
 
 		}
 
-		// Cleanup our RobocodeEngine 
+		// Cleanup our RobocodeEngine
 		engine.close();
 
-		System.out.println(Arrays.toString(BattlefieldSize));
+		System.out.println(Arrays.toString(battlefieldSize));
 
-		System.out.println(Arrays.toString(GunCoolingRate));
-		System.out.println(Arrays.toString(FinalScore1));
+		System.out.println(Arrays.toString(gunCoolingRate));
+		System.out.println(Arrays.toString(finalScore1));
 
-		System.out.println(Arrays.toString(FinalScore2));
+		System.out.println(Arrays.toString(finalScore2));
 
 		// Create the training dataset for the neural network
 		double[][] RawInputs = new double[NUMSAMPLES][NUM_NN_INPUTS];
 		double[][] RawOutputs = new double[NUMSAMPLES][1];
-		double[][] TrainingInputs = new double[NUMSAMPLES/2][NUM_NN_INPUTS];
-		double[][] TrainingOutputs = new double[NUMSAMPLES/2][1];
-		double[][] ValidationInputs = new double[NUMSAMPLES/2][NUM_NN_INPUTS];
-		double[][] ValidationOutputs = new double[NUMSAMPLES/2][1];
+		double[][] trainingInputs = new double[NUMSAMPLES*2 / 3][NUM_NN_INPUTS];
+		double[][] trainingOutputs = new double[NUMSAMPLES*2 / 3][1];
+		double[][] validationInputs = new double[NUMSAMPLES / 3][NUM_NN_INPUTS];
+		double[][] validationOutputs = new double[NUMSAMPLES / 3][1];
 
 		for (int NdxSample = 0; NdxSample < NUMSAMPLES; NdxSample++)
 
@@ -148,19 +162,22 @@ public class BattlefieldParameterEvaluator {
 			// IMPORTANT: normalize the inputs and the outputs to
 			// the interval [0,1]
 
-			RawInputs[NdxSample][0] = BattlefieldSize[NdxSample] / MAXBATTLEFIELDSIZE;
-			RawInputs[NdxSample][1] = GunCoolingRate[NdxSample] / MAXGUNCOOLINGRATE;
-			RawOutputs[NdxSample][0] = FinalScore1[NdxSample] / 250;
+			RawInputs[NdxSample][0] = battlefieldSize[NdxSample] / MAXBATTLEFIELDSIZE;
+			RawInputs[NdxSample][1] = gunCoolingRate[NdxSample] / MAXGUNCOOLINGRATE;
+			maxScore = maxOfArray(finalScore1);
+			RawOutputs[NdxSample][0] = finalScore1[NdxSample] / (maxScore);
 
 		}
-		
-		TrainingInputs = Arrays.copyOfRange(RawInputs, 0, NUMSAMPLES/2);
-		TrainingOutputs = Arrays.copyOfRange(RawOutputs, 0, NUMSAMPLES/2);
-		ValidationInputs = Arrays.copyOfRange(RawInputs, NUMSAMPLES/2, NUMSAMPLES);
-		ValidationOutputs = Arrays.copyOfRange(RawOutputs, NUMSAMPLES/2, NUMSAMPLES);
-		
+		//66% training, 33% validation
+		trainingInputs = Arrays.copyOfRange(RawInputs, 0, NUMSAMPLES *2/ 3);
+		trainingOutputs = Arrays.copyOfRange(RawOutputs, 0, NUMSAMPLES*2 / 3);
+		validationInputs = Arrays.copyOfRange(RawInputs, NUMSAMPLES*2 / 3, NUMSAMPLES);
+		validationOutputs = Arrays.copyOfRange(RawOutputs, NUMSAMPLES*2 / 3, NUMSAMPLES);
+
 		// Create and train the neural network
-		MLDataSet trainingSet =	new BasicMLDataSet (RawInputs, RawOutputs) ;
+		MLDataSet trainingSet = new BasicMLDataSet(trainingInputs, trainingOutputs);
+		MLDataSet validationSet = new BasicMLDataSet(validationInputs, validationOutputs);
+
 		BasicNetwork network = new BasicNetwork();
 		network.addLayer(new BasicLayer(null, true, 2)); // Input
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, NUM_NN_HIDDEN_UNITS)); // Hidden
@@ -168,55 +185,60 @@ public class BattlefieldParameterEvaluator {
 		network.getStructure().finalizeStructure();
 		network.reset();
 
-		
-		
-
 		System.out.println("Training network...");
-		//MLTrainFactory trainFactory = new MLTrainFactory();
-		//MLTrain train = trainFactory.create(network, trainingSet, MLTrainFactory.TYPE_RPROP, "LR=0.7, MOM=0.3");
-		 MLTrain train = new ResilientPropagation (network , trainingSet) ;	// posible final
-		do{
+		MLTrain train = new ResilientPropagation(network, trainingSet);
+		
+		NetworkTrainer networkTrainer = new NetworkTrainer(validationSet, network, 40_000, 2_000);
+		
+		do {
 			train.iteration();
-		}while(train.getError() > 100); // testear
+		} while (!networkTrainer.hasFinished(network)); // testear
+		
+		network = networkTrainer.getBestNetwork();
+		
+		
 		
 		System.out.println("Training completed.");
-		double e = network.calculateError(trainingSet); // cambiar de trainingSet a validationSet
-		System.out.println("Network trained to error: " +e);
+		System.out.println("Best epoch: " + NetworkTrainer.bestEpoch);
 		
+		double e = network.calculateError(validationSet); // cambiar de
+														// trainingSet a
+														// validationSet
+		System.out.println("Network trained to error: " + e);
 
 		System.out.println("Testing network...");
-		
+
 		// Generate test samples to build an output image
 
-		int[] OutputRGBint = new int[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES];
-		Color MyColor;
+		int[] outputRGBint = new int[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES];
+		Color myColor;
 
-		double MyValue = 0;
-		double[][] MyTestData = new double[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES][NUM_NN_INPUTS];
-		for (int NdxBattleSize = 0; NdxBattleSize < NUMBATTLEFIELDSIZES; NdxBattleSize++) {
-			for (int NdxCooling = 0; NdxCooling < NUMCOOLINGRATES; NdxCooling++)
+		double myValue = 0;
+		double[][] myTestData = new double[NUMBATTLEFIELDSIZES * NUMCOOLINGRATES][NUM_NN_INPUTS];
+		for (int ndxBattleSize = 0; ndxBattleSize < NUMBATTLEFIELDSIZES; ndxBattleSize++) {
+			for (int ndxCooling = 0; ndxCooling < NUMCOOLINGRATES; ndxCooling++)
 
 			{
-				MyTestData[NdxCooling + NdxBattleSize * NUMCOOLINGRATES][0] = 0.1
-						+ 0.9 * ((double) NdxBattleSize) / NUMBATTLEFIELDSIZES;
+				myTestData[ndxCooling + ndxBattleSize * NUMCOOLINGRATES][0] = 0.1
+						+ 0.9 * ((double) ndxBattleSize) / NUMBATTLEFIELDSIZES;
 
-				MyTestData[NdxCooling + NdxBattleSize * NUMCOOLINGRATES][1] = 0.1
-						+ 0.9 * ((double) NdxCooling) / NUMCOOLINGRATES;
+				myTestData[ndxCooling + ndxBattleSize * NUMCOOLINGRATES][1] = 0.1
+						+ 0.9 * ((double) ndxCooling) / NUMCOOLINGRATES;
 
 			}
 		}
 
 		// Simulate the neural network with the test samples and fill a matrix
-		for (int NdxBattleSize = 0; NdxBattleSize < NUMBATTLEFIELDSIZES; NdxBattleSize++) {
-			for (int NdxCooling = 0; NdxCooling < NUMCOOLINGRATES; NdxCooling++)
+		for (int ndxBattleSize = 0; ndxBattleSize < NUMBATTLEFIELDSIZES; ndxBattleSize++) {
+			for (int ndxCooling = 0; ndxCooling < NUMCOOLINGRATES; ndxCooling++)
 
 			{
-				double [] MyResult new double[1];
-				network.compute(MyTestData[NdxCooling+NdxBattleSize*NUMCOOLINGRATES],MyResult);
-				MyValue = ClipColor(MyResult[0]);
+				double[] myResult = new double[1];
+				network.compute(myTestData[ndxCooling+ndxBattleSize*NUMCOOLINGRATES], myResult);
+				myValue = ClipColor(myResult[0]);
 
-				MyColor = new Color((float) MyValue, (float) MyValue, (float) MyValue);
-				OutputRGBint[NdxCooling + NdxBattleSize * NUMCOOLINGRATES] = MyColor.getRGB();
+				myColor = new Color((float) myValue, (float) myValue, (float) myValue);
+				outputRGBint[ndxCooling + ndxBattleSize * NUMCOOLINGRATES] = myColor.getRGB();
 
 			}
 		}
@@ -224,43 +246,48 @@ public class BattlefieldParameterEvaluator {
 
 		// Plot the training samples
 
-		for (int NdxSample = 0; NdxSample < NUMSAMPLES/2; NdxSample++) {
+		for (int ndxSample = 0; ndxSample < NUMSAMPLES / 2; ndxSample++) {
 
-			MyValue = ClipColor(FinalScore1[NdxSample] / 250);
-			MyColor = new Color((float) MyValue,
+			myValue = ClipColor(finalScore1[ndxSample] /maxScore);
+			myColor = new Color((float) myValue,
 
-					(float) MyValue, (float) MyValue);
+					(float) myValue, (float) myValue);
 
-			int MyPixelIndex = (int) (Math
-					.round(NUMCOOLINGRATES * ((GunCoolingRate[NdxSample] / MAXGUNCOOLINGRATE) - 0.1) / 0.9)
-					+ Math.round(NUMBATTLEFIELDSIZES * ((BattlefieldSize[NdxSample] / MAXBATTLEFIELDSIZE) - 0.1) / 0.9)
+			int myPixelIndex = (int) (Math
+					.round(NUMCOOLINGRATES * ((gunCoolingRate[ndxSample] / MAXGUNCOOLINGRATE) - 0.1) / 0.9)
+					+ Math.round(NUMBATTLEFIELDSIZES * ((battlefieldSize[ndxSample] / MAXBATTLEFIELDSIZE) - 0.1) / 0.9)
 							* NUMCOOLINGRATES);
 
-			if ((MyPixelIndex >= 0) && (MyPixelIndex < NUMCOOLINGRATES * NUMBATTLEFIELDSIZES))
+			if ((myPixelIndex >= 0) && (myPixelIndex < NUMCOOLINGRATES * NUMBATTLEFIELDSIZES))
 
 			{
-				OutputRGBint[MyPixelIndex] = MyColor.getRGB();
+				outputRGBint[myPixelIndex] = myColor.getRGB();
 			}
 		}
 
 		BufferedImage img = new BufferedImage(NUMCOOLINGRATES, NUMBATTLEFIELDSIZES, BufferedImage.TYPE_INT_RGB);
 
-		img.setRGB(0, 0, NUMCOOLINGRATES, NUMBATTLEFIELDSIZES, OutputRGBint, 0, NUMCOOLINGRATES);
+		img.setRGB(0, 0, NUMCOOLINGRATES, NUMBATTLEFIELDSIZES, outputRGBint, 0, NUMCOOLINGRATES);
 
 		File f = new File("hello.png");
 		try {
 
 			ImageIO.write(img, "png", f);
-		} catch (IOException e) {
+		} catch (IOException ioE) {
 
-			// TODO Auto‐generated catchblock
-			e.printStackTrace();
+			// TODO Autoâ€�generated catchblock
+			ioE.printStackTrace();
 
 		}
 
 		System.out.println("Image generated.");
 
 		// Make sure that the Java VM is shut down properly
+		pwScore1.close();
+		pwScore2.close();
+		pwSize.close();
+		pwCoolingRate.close();
+		
 		System.exit(0);
 
 	}
@@ -270,16 +297,24 @@ public class BattlefieldParameterEvaluator {
 	 * Clip a color value (double precision) to lie in the valid range [0,1]
 	 */
 
-	public static double ClipColor(double Value) {
-
-		if (Value < 0.0) {
-			Value = 0.0;
+	private static double maxOfArray(double[] arr) {
+		double ans = arr[0];
+		for (int i = 0; i < arr.length; i++) {
+			ans = Math.max(ans, arr[i]);
 		}
-		if (Value > 1.0) {
-			Value = 1.0;
+		return ans;
+	}
+
+	public static double ClipColor(double value) {
+
+		if (value < 0.0) {
+			value = 0.0;
+		}
+		if (value > 1.0) {
+			value = 1.0;
 		}
 
-		return Value;
+		return value;
 
 	}
 
@@ -293,7 +328,7 @@ public class BattlefieldParameterEvaluator {
 
 		// Called when the battle is completed successfully with battle results
 		public void onBattleCompleted(BattleCompletedEvent e) {
-			System.out.println("‐‐ Battle has completed ‐‐");
+			System.out.println("â€�â€� Battle has completed â€�â€�");
 
 			// Get the indexed battle results
 			BattleResults[] results = e.getIndexedResults();
@@ -308,11 +343,12 @@ public class BattlefieldParameterEvaluator {
 
 			// Store the scores of the robots
 
-			BattlefieldParameterEvaluator.FinalScore1[NdxBattle] = results[0].getScore();
-			BattlefieldParameterEvaluator.FinalScore2[NdxBattle] = results[1].getScore();
-
+			BattlefieldParameterEvaluator.finalScore1[ndxBattle] = Math.pow(results[0].getScore(), 2);
+			BattlefieldParameterEvaluator.finalScore2[ndxBattle] = Math.pow(results[1].getScore(), 2);
+			pwScore1.append(BattlefieldParameterEvaluator.finalScore1[ndxBattle] + " ");
+			pwScore2.append(BattlefieldParameterEvaluator.finalScore2[ndxBattle] + " ");
 		}
-
+		
 		// Called when the game sends out an information message during the
 		// battle
 		public void onBattleMessage(BattleMessageEvent e) {
