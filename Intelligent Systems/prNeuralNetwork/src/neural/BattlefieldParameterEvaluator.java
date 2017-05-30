@@ -60,12 +60,16 @@ public class BattlefieldParameterEvaluator {
 	static PrintWriter pwScore2;
 	static PrintWriter pwSize;
 	static PrintWriter pwCoolingRate;
+	static PrintWriter errorTrain;
+	static PrintWriter errorValidation;
 	
 	public static void main(String[] args) throws FileNotFoundException {
 		pwScore1 = new PrintWriter("score1.txt");
 		pwScore2 = new PrintWriter("score2.txt");
 		pwSize = new PrintWriter("size.txt");
 		pwCoolingRate = new PrintWriter("coolingRate.txt");
+		errorTrain = new PrintWriter("errorTrain.txt");
+		errorValidation = new PrintWriter("errorValidation.txt");
 		
 		double[] battlefieldSize = new double[NUMSAMPLES];
 		double[] gunCoolingRate = new double[NUMSAMPLES];
@@ -82,7 +86,7 @@ public class BattlefieldParameterEvaluator {
 
 		// Run from C:/Robocode
 
-		RobocodeEngine engine = new RobocodeEngine(new java.io.File("C:/robocode"));
+		RobocodeEngine engine = new RobocodeEngine(new java.io.File("../robocode"));
 
 		// Add our own battle listener to the RobocodeEngine
 		engine.addBattleListener(new BattleObserver());
@@ -166,6 +170,7 @@ public class BattlefieldParameterEvaluator {
 			RawInputs[NdxSample][1] = gunCoolingRate[NdxSample] / MAXGUNCOOLINGRATE;
 			maxScore = maxOfArray(finalScore1);
 			RawOutputs[NdxSample][0] = finalScore1[NdxSample] / (maxScore);
+			pwScore1.append(RawOutputs[NdxSample][0] + " ");
 
 		}
 		//66% training, 33% validation
@@ -192,6 +197,8 @@ public class BattlefieldParameterEvaluator {
 		
 		do {
 			train.iteration();
+			errorTrain.append(Math.log(network.calculateError(trainingSet)) + " ");
+			errorValidation.append(Math.log(network.calculateError(validationSet)) + " ");
 		} while (!networkTrainer.hasFinished(network)); // testear
 		
 		network = networkTrainer.getBestNetwork();
@@ -345,7 +352,6 @@ public class BattlefieldParameterEvaluator {
 
 			BattlefieldParameterEvaluator.finalScore1[ndxBattle] = Math.pow(results[0].getScore(), 2);
 			BattlefieldParameterEvaluator.finalScore2[ndxBattle] = Math.pow(results[1].getScore(), 2);
-			pwScore1.append(BattlefieldParameterEvaluator.finalScore1[ndxBattle] + " ");
 			pwScore2.append(BattlefieldParameterEvaluator.finalScore2[ndxBattle] + " ");
 		}
 		
