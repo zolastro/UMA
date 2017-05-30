@@ -35,9 +35,10 @@ public class NetworkTrainer {
 	}
 	
 	public boolean hasFinished(BasicNetwork network){
+		
 		totalEpochs++;
 		double error = network.calculateError(validationSet);
-//		System.out.println(error);
+		
 		if(error < minimumError){
 			bestEpoch = totalEpochs;
 			bestNetwork = (BasicNetwork) network.clone();
@@ -45,8 +46,8 @@ public class NetworkTrainer {
 			numberOfWorseEpochs = 0;
 		}else{
 			numberOfWorseEpochs++;
-//			System.out.println("Worse than : " + minimumError);
 		}
+	
 		if(numberOfWorseEpochs > EXTRA_EPOCHS &&
 				totalEpochs > MINIMUM_EPOCHS){
 			return true;
